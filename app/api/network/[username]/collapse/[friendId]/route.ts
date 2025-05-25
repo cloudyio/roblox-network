@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/neo4j';
-import { User, NetworkData, NetworkNode, NetworkLink } from '@/types/user';
+import { NetworkData, NetworkNode, NetworkLink } from '@/types/user';
 
 export async function POST(
   request: Request,
-  { params }: { params: { username: string; friendId: string } }
+  { params }: { params: Promise<{ username: string; friendId: string }> }
 ) {
   const session = getSession();
   

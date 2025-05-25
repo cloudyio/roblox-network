@@ -1,18 +1,18 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { NetworkData, NetworkNode, NetworkLink, User } from '@/types/user';
+import { NetworkData, NetworkNode, NetworkLink } from '@/types/user';
 
 interface NetworkGraphProps {
   onNodeClick?: (nodeId: number) => void;
   username?: string;
   onUserChange?: (username: string) => void;
   shortestPath?: number[];
-  pathNodes?: any[];
-  pathLinks?: any[];
+  pathNodes?: NetworkNode[];
+  pathLinks?: NetworkLink[];
 }
 
-export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath = [], pathNodes = [], pathLinks = [] }: NetworkGraphProps) {
+export function NetworkGraph({ onNodeClick, username, shortestPath = [], pathNodes = [], pathLinks = [] }: NetworkGraphProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [networkData, setNetworkData] = useState<NetworkData>({ nodes: [], links: [] });
   const [loading, setLoading] = useState(false);
@@ -57,12 +57,7 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
     };
   };
 
-  const worldToScreen = (worldX: number, worldY: number) => {
-    return {
-      x: worldX * zoom + panOffset.x,
-      y: worldY * zoom + panOffset.y,
-    };
-  };
+
 
   // Add frame counter for debugging
   const frameCountRef = useRef(0);
@@ -167,9 +162,6 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
     }
 
     frameCountRef.current++;
-    
-    // Only log every 300 frames (about once every 5 seconds at 60fps) and only if there are issues
-    const shouldLog = frameCountRef.current % 300 === 0;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
@@ -213,8 +205,6 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
       ctx.stroke();
     }
 
-    let invalidNodeCount = 0;
-
     // Draw nodes
     for (const node of nodes) {
       const radius = Math.max(node.val || 4, 8);
@@ -228,7 +218,6 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
 
       // Skip nodes that are way off screen or have invalid positions
       if (!isFinite(node.x) || !isFinite(node.y)) {
-        invalidNodeCount++;
         continue;
       }
 
@@ -320,7 +309,7 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
       ctx.fillText(node.name, node.x, node.y + radius + 5);
     }
 
-    // Skip nodes with invalid positions (logged count: invalidNodeCount)
+    // Skip nodes with invalid positions
 
     // Restore context state to remove transformations for next frame
     ctx.restore();
@@ -582,7 +571,7 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
     canvas.style.cursor = foundNode ? 'grab' : (isPanning ? 'grabbing' : 'default');
   };
 
-  const handleCanvasMouseUp = (event: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleCanvasMouseUp = () => {
     if (!hasDragged && draggedNode !== null) {
       handleNodeClick(draggedNode);
     }
@@ -610,7 +599,7 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
       const { nodes } = simulationRef.current;
       const node = nodes.find(n => n.id === nodeId);
       if (node) {
-        expandFriendNetwork(nodeId, node.name);
+        expandFriendNetwork(nodeId);
       }
     } else {
       // Collapse the node - remove its friends from the network
@@ -658,7 +647,7 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
     }
   };
 
-  const expandFriendNetwork = async (friendId: number, friendName: string) => {
+  const expandFriendNetwork = async (friendId: number) => {
     if (!username || !mainUser) return;
     
     try {
@@ -792,12 +781,8 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
       
       // Only update if dimensions are valid
       if (rect.width > 0 && rect.height > 0) {
-        const oldWidth = canvas.width;
-        const oldHeight = canvas.height;
         canvas.width = rect.width;
         canvas.height = rect.height;
-        
-        // Canvas dimensions updated
         
         // Don't reinitialize simulation on resize - just let it adapt to new canvas size
         // The simulation will naturally adjust to the new bounds
@@ -827,7 +812,7 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
       setZoom(newZoom);
 
       // Adjust panOffset to keep the point under the mouse stationary
-      setPanOffset(prevPanOffset => ({
+      setPanOffset(() => ({
         x: mouseX - worldBeforeZoom.x * newZoom,
         y: mouseY - worldBeforeZoom.y * newZoom,
       }));
@@ -868,7 +853,7 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
       <div className="flex items-center justify-center h-full">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-          <div className="text-lg">Loading {username}'s network...</div>
+          <div className="text-lg">Loading {username}&apos;s network...</div>
         </div>
       </div>
     );

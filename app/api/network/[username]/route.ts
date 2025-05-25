@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/neo4j';
-import { User, NetworkData, NetworkNode, NetworkLink } from '@/types/user';
+import { NetworkData, NetworkNode, NetworkLink } from '@/types/user';
 
 export async function GET(
   request: Request,
-  { params }: { params: { username: string } }
+  { params }: { params: Promise<{ username: string }> }
 ) {
   const session = getSession();
   
@@ -108,7 +108,7 @@ export async function GET(
     const connectedFriends = allFriends.filter(friend => connectedNodeIds.has(friend.id));
 
     // Deduplicate nodes by ID
-    const uniqueUsersMap = new Map<number, {id: number, username: string, friends: number[], createdAt: any}>();
+    const uniqueUsersMap = new Map<number, {id: number, username: string, friends: number[], createdAt: unknown}>();
     uniqueUsersMap.set(mainUser.id, mainUser);
     connectedFriends.forEach(user => {
       uniqueUsersMap.set(user.id, user);
@@ -165,10 +165,4 @@ export async function GET(
   }
 }
 
-function getNodeColor(friendCount: number): string {
-  if (friendCount > 50) return '#f97316'; // Orange for high connectivity
-  if (friendCount > 20) return '#eab308'; // Yellow for medium-high
-  if (friendCount > 10) return '#22c55e'; // Green for medium
-  if (friendCount > 5) return '#3b82f6'; // Blue for low-medium
-  return '#6b7280'; // Gray for low connectivity
-} 
+ 

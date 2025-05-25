@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/neo4j';
-import { User, NetworkData, NetworkNode, NetworkLink } from '@/types/user';
+import { NetworkData, NetworkNode, NetworkLink } from '@/types/user';
 
 function getNodeColor(friendCount: number): string {
   if (friendCount >= 20) return '#ef4444'; // Red for highly connected

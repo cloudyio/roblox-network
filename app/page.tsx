@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { NetworkGraph } from '@/components/network-graph';
 import { UsernameInput } from '@/components/username-input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { User } from '@/types/user';
+import { User, NetworkNode, NetworkLink } from '@/types/user';
 
 export default function Home() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -19,8 +19,8 @@ export default function Home() {
   const [pathToUser, setPathToUser] = useState('');
   const [pathFinding, setPathFinding] = useState(false);
   const [shortestPath, setShortestPath] = useState<number[]>([]);
-  const [pathNodes, setPathNodes] = useState<any[]>([]);
-  const [pathLinks, setPathLinks] = useState<any[]>([]);
+  const [pathNodes, setPathNodes] = useState<NetworkNode[]>([]);
+  const [pathLinks, setPathLinks] = useState<NetworkLink[]>([]);
   const [pathError, setPathError] = useState<string | null>(null);
 
   const handleUsernameSubmit = async (username: string) => {
@@ -70,7 +70,7 @@ export default function Home() {
       
       setSelectedUser(data.user);
       setUserFriends(data.friends || []);
-    } catch (error) {
+    } catch {
       // Error handled silently - could add toast notification here if needed
     } finally {
       setLoading(false);
@@ -242,9 +242,9 @@ export default function Home() {
                     <span className="text-gray-300">Shortest path</span>
                   </div>
                 </div>
-                <div className="mt-2 text-xs text-gray-400 text-center">
-                  Click any node to expand/collapse their network • Red nodes show shortest path with numbers indicating order
-                </div>
+                                  <div className="mt-2 text-xs text-gray-400 text-center">
+                    Click any node to expand/collapse their network • Red nodes show shortest path with numbers indicating order
+                  </div>
               </CardContent>
             </Card>
           </div>
@@ -320,7 +320,7 @@ export default function Home() {
                   {shortestPath.length > 0 && (
                     <div className="text-xs text-green-400 bg-green-900/20 p-2 rounded">
                       Path found! {shortestPath.length} degrees of separation. 
-                      Showing path nodes + {pathFromUser.trim()}'s direct friends for context.
+                      Showing path nodes + {pathFromUser.trim()}&apos;s direct friends for context.
                     </div>
                   )}
                   

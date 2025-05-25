@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/neo4j';
-import { User } from '@/types/user';
+
 
 export async function POST(request: Request) {
   const session = getSession();
@@ -108,7 +108,10 @@ export async function POST(request: Request) {
     }
 
     const pathRecord = pathResult.records[0];
-    const pathIds = pathRecord.get('pathIds').map((id: any) => id.toNumber());
+    const pathIds = pathRecord.get('pathIds').map((id: unknown) => {
+      const idObj = id as { toNumber?: () => number };
+      return typeof idObj.toNumber === 'function' ? idObj.toNumber() : id;
+    });
     const pathLength = pathRecord.get('pathLength').toNumber();
 
     // Get full user data for all nodes in the path AND their direct friends for context
@@ -144,7 +147,7 @@ export async function POST(request: Request) {
 
     // Get context users data (friends of primary user who aren't in the path)
     const contextUserIds = Array.from(friendsOfPrimaryUserIds).filter(id => !pathUserIds.has(id));
-    let contextUsersData: any[] = [];
+    let contextUsersData: {id: number, username: string}[] = [];
     
     if (contextUserIds.length > 0) {
       const contextUsersResult = await session.run(

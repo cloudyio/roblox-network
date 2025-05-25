@@ -4,16 +4,17 @@ import { User } from '@/types/user';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = getSession();
+  const { id } = await params;
   
   try {
-    console.log('Fetching user with ID:', params.id);
-    const userId = parseInt(params.id);
+    console.log('Fetching user with ID:', id);
+    const userId = parseInt(id);
     
     if (isNaN(userId)) {
-      console.log('Invalid user ID provided:', params.id);
+      console.log('Invalid user ID provided:', id);
       return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
     }
 
@@ -59,7 +60,7 @@ export async function GET(
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      userId: params.id
+      userId: id
     });
     return NextResponse.json({ 
       error: 'Failed to fetch user',

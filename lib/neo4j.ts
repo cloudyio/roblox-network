@@ -21,7 +21,7 @@ let driver: Driver;
 if (process.env.NODE_ENV === 'development') {
   // In development mode, use a global variable so that the value
   // is preserved across module reloads caused by HMR (Hot Module Replacement).
-  let globalWithNeo4j = global as typeof globalThis & {
+  const globalWithNeo4j = global as typeof globalThis & {
     _neo4jDriver?: Driver
   }
 

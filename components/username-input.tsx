@@ -62,7 +62,7 @@ export function UsernameInput({ onSubmit, loading = false }: UsernameInputProps)
         
         <div className="mt-4 text-xs text-gray-500 text-center">
           <p>• Your network will show your friends and their connections</p>
-          <p>• You'll appear as a red node in the center</p>
+          <p>• You&apos;ll appear as a red node in the center</p>
           <p>• Click on a friend to expand the network</p>
         </div>
       </CardContent>

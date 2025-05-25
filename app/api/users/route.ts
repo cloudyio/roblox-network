@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/neo4j';
-import { User } from '@/types/user';
+
 
 export async function GET() {
   const session = getSession();
