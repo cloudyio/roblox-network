@@ -161,10 +161,10 @@ export default function Home() {
         <div className="container mx-auto p-6">
           <div className="mb-8 text-center">
             <h1 className="text-4xl font-bold text-white mb-2">
-              Roblox Friends Network
+              Roblox Network
             </h1>
             <p className="text-lg text-gray-300">
-              Explore your connections and see how you're linked to other Roblox players
+               A graph displaying a network of all your roblox friends
             </p>
           </div>
           <div className="flex items-center justify-center min-h-[60vh]">

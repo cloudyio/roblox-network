@@ -22,9 +22,9 @@ export function UsernameInput({ onSubmit, loading = false }: UsernameInputProps)
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Enter Your Roblox Username</CardTitle>
+        <CardTitle className="text-2xl">Enter Your Username</CardTitle>
         <CardDescription>
-          Visualize your friend network and see how you're connected to other players
+          View a network of all your friends and their friends!
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -63,7 +63,7 @@ export function UsernameInput({ onSubmit, loading = false }: UsernameInputProps)
         <div className="mt-4 text-xs text-gray-500 text-center">
           <p>• Your network will show your friends and their connections</p>
           <p>• You'll appear as a red node in the center</p>
-          <p>• Green lines indicate mutual friendships</p>
+          <p>• Click on a friend to expand the network</p>
         </div>
       </CardContent>
     </Card>
