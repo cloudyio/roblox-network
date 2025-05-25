@@ -320,10 +320,7 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
       ctx.fillText(node.name, node.x, node.y + radius + 5);
     }
 
-    // Log issues only occasionally
-    if (shouldLog && invalidNodeCount > 0) {
-      console.warn(`Skipped ${invalidNodeCount} nodes with invalid positions`);
-    }
+    // Skip nodes with invalid positions (logged count: invalidNodeCount)
 
     // Restore context state to remove transformations for next frame
     ctx.restore();
@@ -341,7 +338,6 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
   initializeSimulationRef.current = (newData: NetworkData) => {
     const canvas = canvasRef.current;
     if (!canvas) {
-      console.log('Canvas not available for simulation initialization');
       return;
     }
 
@@ -360,7 +356,6 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
     
     // Ensure canvas has valid dimensions - wait if not ready
     if (width <= 0 || height <= 0) {
-      console.log('Canvas has invalid dimensions, retrying in 100ms');
       setTimeout(() => initializeSimulationRef.current?.(newData), 100);
       return;
     }
@@ -391,7 +386,6 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
         
         // Validate center coordinates
         if (!isFinite(centerX) || !isFinite(centerY)) {
-          console.error('Invalid center coordinates:', centerX, centerY);
           return {
             ...newNodeData,
             x: 100, // fallback position
@@ -415,7 +409,6 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
 
         // Validate final positions
         if (!isFinite(initialX) || !isFinite(initialY)) {
-          console.error('Invalid calculated position for node:', newNodeData.name, initialX, initialY);
           initialX = centerX;
           initialY = centerY;
         }
@@ -434,15 +427,12 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
     // Validate all nodes have valid positions before proceeding
     const invalidNodes = newSimNodes.filter(node => !isFinite(node.x) || !isFinite(node.y));
     if (invalidNodes.length > 0) {
-      console.error('Found nodes with invalid positions:', invalidNodes.map(n => ({ name: n.name, x: n.x, y: n.y })));
       // Fix invalid nodes
       invalidNodes.forEach(node => {
         node.x = width / 2;
         node.y = height / 2;
       });
     }
-
-    console.log(`Simulation initialized: ${newSimNodes.length} nodes, ${newData.links.length} links, canvas: ${width}x${height}`);
 
     simulationRef.current = { nodes: newSimNodes, links: newData.links };
     startSimulationRef.current?.();
@@ -703,7 +693,6 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
       }
       
     } catch (err) {
-      console.error('Error expanding network:', err);
       setError(err instanceof Error ? err.message : 'Failed to expand network');
     }
   };
@@ -743,7 +732,6 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
       }
       
     } catch (err) {
-      console.error('Error collapsing network:', err);
       setError(err instanceof Error ? err.message : 'Failed to collapse network');
     }
   };
@@ -809,10 +797,7 @@ export function NetworkGraph({ onNodeClick, username, onUserChange, shortestPath
         canvas.width = rect.width;
         canvas.height = rect.height;
         
-        // Only log if dimensions actually changed significantly
-        if (Math.abs(oldWidth - rect.width) > 10 || Math.abs(oldHeight - rect.height) > 10) {
-          console.log('Canvas resized to:', canvas.width, 'x', canvas.height);
-        }
+        // Canvas dimensions updated
         
         // Don't reinitialize simulation on resize - just let it adapt to new canvas size
         // The simulation will naturally adjust to the new bounds

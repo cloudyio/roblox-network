@@ -58,7 +58,6 @@ export default function Home() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         const errorMessage = errorData.error || `Failed to fetch user data (${response.status})`;
-        console.error('API Error:', errorMessage, errorData.details);
         throw new Error(errorMessage);
       }
       
@@ -66,16 +65,13 @@ export default function Home() {
       
       // Validate the response data structure
       if (!data.user || typeof data.user.id !== 'number' || !data.user.username) {
-        console.error('Invalid user data structure:', data);
         throw new Error('Invalid user data received from server');
       }
       
       setSelectedUser(data.user);
       setUserFriends(data.friends || []);
     } catch (error) {
-      console.error('Error fetching user data:', error);
-      // You could also show this error to the user in the UI if needed
-      // For now, just log it - you could add a toast notification here
+      // Error handled silently - could add toast notification here if needed
     } finally {
       setLoading(false);
     }
@@ -136,7 +132,6 @@ export default function Home() {
         setPathError('No path found between these users');
       }
     } catch (error) {
-      console.error('Error finding path:', error);
       setPathError(error instanceof Error ? error.message : 'An unknown error occurred while finding the path');
       setShortestPath([]); // Ensure path is cleared on error
       setPathNodes([]);
