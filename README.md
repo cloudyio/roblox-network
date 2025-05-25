@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Roblox Friends Network Visualization
 
-## Getting Started
+A Next.js application for visualizing Roblox user friendship networks using Neo4j graph database.
 
-First, run the development server:
+## Features
+
+- **Interactive Network Visualization**: View friendship networks with zoom, pan, and drag functionality
+- **Network Expansion**: Click on friends to expand their networks and explore connections
+- **Shortest Path Finding**: Find the shortest path between any two users in the network
+- **Real-time Graph Physics**: Smooth animations and force-directed layout
+- **Neo4j Integration**: Efficient graph queries using Cypher
+
+## Prerequisites
+
+- Node.js 18+ installed
+- Neo4j database (local installation or Neo4j Aura cloud)
+
+## Setup
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Set up Neo4j Database
+
+Follow the detailed setup guide in [NEO4J_SETUP.md](./NEO4J_SETUP.md) to:
+- Install and configure Neo4j
+- Set up your database connection
+
+### 3. Environment Configuration
+
+Create a `.env.local` file in the project root:
+
+```env
+# Neo4j connection settings
+NEO4J_URI=bolt://localhost:7687
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your-password
+
+# For Neo4j Aura (cloud):
+# NEO4J_URI=neo4j+s://your-instance.databases.neo4j.io
+# NEO4J_USERNAME=neo4j
+# NEO4J_PASSWORD=your-generated-password
+```
+
+### 4. Run the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Enter a Username**: Type a Roblox username in the search box
+2. **Explore the Network**: 
+   - Click and drag nodes to reposition them
+   - Use mouse wheel to zoom in/out
+   - Click and drag empty space to pan around
+3. **Expand Networks**: Click on friend nodes to expand their networks
+4. **Find Shortest Paths**: Use the shortest path feature to find connections between users
+5. **Pin Nodes**: Drag nodes to pin them in place, double-click to unpin
 
-## Learn More
+## API Endpoints
 
-To learn more about Next.js, take a look at the following resources:
+- `GET /api/users` - Get all users
+- `GET /api/users/[id]` - Get specific user details
+- `GET /api/network/[username]` - Get user's friendship network
+- `POST /api/network/[username]/expand/[friendId]` - Expand friend's network
+- `POST /api/network/[username]/collapse/[friendId]` - Collapse friend's network
+- `POST /api/shortest-path` - Find shortest path between two users
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Technology Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
+- **Database**: Neo4j with Cypher queries
+- **Visualization**: Custom HTML5 Canvas with physics simulation
+- **UI Components**: Radix UI, Lucide React icons
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+This project is open source and available under the MIT License.
