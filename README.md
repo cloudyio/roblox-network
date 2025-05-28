@@ -1,6 +1,9 @@
 # Roblox Friends Network Visualization
 
 A Next.js application for visualizing Roblox user friendship networks using Neo4j graph database.
+Inspiration this website [here](https://areyoufriendswithdavid.xyz/)
+
+Demo at [network.cloudyio.me]
 
 ## Features
 

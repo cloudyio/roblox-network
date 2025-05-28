@@ -59,6 +59,7 @@ export function UsernameInput({ onSubmit, loading = false }: UsernameInputProps)
             )}
           </Button>
         </form>
+        <p className="text-xs text-center pt-3">Dont play roblox? Try inputting david.baszucki</p>
         
         <div className="mt-4 text-xs text-gray-500 text-center">
           <p>• Your network will show your friends and their connections</p>

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { NetworkData, NetworkNode, NetworkLink } from '@/types/user';
+import { UserContextMenu } from './user-context-menu';
 
 interface NetworkGraphProps {
   onNodeClick?: (nodeId: number) => void;
@@ -35,6 +36,13 @@ export function NetworkGraph({ onNodeClick, username, shortestPath = [], pathNod
   const [pinnedNodes, setPinnedNodes] = useState<Set<number>>(new Set());
   const [mouseDownPos, setMouseDownPos] = useState({ x: 0, y: 0 });
   const [hasDragged, setHasDragged] = useState(false);
+
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<{
+    userId: number;
+    username: string;
+    position: { x: number; y: number };
+  } | null>(null);
 
   // Simulation state
   const animationRef = useRef<number | undefined>(undefined);
@@ -477,6 +485,14 @@ export function NetworkGraph({ onNodeClick, username, shortestPath = [], pathNod
     const canvas = canvasRef.current;
     if (!canvas) return;
     
+    // Close context menu on any left mouse down (but not right click)
+    if (event.button === 0) {
+      setContextMenu(null);
+    }
+    
+    // Only handle left mouse button for dragging and panning
+    if (event.button !== 0) return;
+    
     const rect = canvas.getBoundingClientRect();
     const screenX = event.clientX - rect.left;
     const screenY = event.clientY - rect.top;
@@ -571,8 +587,9 @@ export function NetworkGraph({ onNodeClick, username, shortestPath = [], pathNod
     canvas.style.cursor = foundNode ? 'grab' : (isPanning ? 'grabbing' : 'default');
   };
 
-  const handleCanvasMouseUp = () => {
-    if (!hasDragged && draggedNode !== null) {
+  const handleCanvasMouseUp = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    // Only trigger node click on left mouse button (button 0) and if not dragged
+    if (!hasDragged && draggedNode !== null && event.button === 0) {
       handleNodeClick(draggedNode);
     }
     
@@ -645,6 +662,38 @@ export function NetworkGraph({ onNodeClick, username, shortestPath = [], pathNod
         break;
       }
     }
+  };
+
+  const handleCanvasRightClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    event.preventDefault(); // Prevent browser context menu
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const screenX = event.clientX - rect.left;
+    const screenY = event.clientY - rect.top;
+    const worldPos = screenToWorld(screenX, screenY);
+    const { nodes } = simulationRef.current;
+    
+    // Check if right-clicking on a node
+    for (const node of nodes) {
+      const distance = Math.sqrt((worldPos.x - node.x) ** 2 + (worldPos.y - node.y) ** 2);
+      const radius = Math.max(node.val || 4, 8);
+      
+      if (distance <= radius) {
+        // Show context menu for this node
+        setContextMenu({
+          userId: node.id,
+          username: node.name,
+          position: { x: event.clientX, y: event.clientY } // Use screen coordinates
+        });
+        return;
+      }
+    }
+    
+    // If not clicking on a node, close context menu
+    setContextMenu(null);
   };
 
   const expandFriendNetwork = async (friendId: number) => {
@@ -893,7 +942,18 @@ export function NetworkGraph({ onNodeClick, username, shortestPath = [], pathNod
         onMouseUp={handleCanvasMouseUp}
         onMouseLeave={handleCanvasMouseLeave}
         onDoubleClick={handleCanvasDoubleClick}
+        onContextMenu={handleCanvasRightClick}
       />
+      
+      {/* Context Menu */}
+      {contextMenu && (
+        <UserContextMenu
+          userId={contextMenu.userId}
+          username={contextMenu.username}
+          position={contextMenu.position}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
     </div>
   );
 } 

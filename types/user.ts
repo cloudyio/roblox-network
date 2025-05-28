@@ -3,6 +3,8 @@ export interface User {
   username: string;
   friends: number[]; // Array of friend IDs
   createdAt?: Date;
+  avatar?: string; // Roblox avatar thumbnail URL
+  badges?: Badge[]; // Recent badges
 }
 
 export interface NetworkNode {
@@ -24,4 +26,25 @@ export interface NetworkLink {
 export interface NetworkData {
   nodes: NetworkNode[];
   links: NetworkLink[];
+}
+
+export interface Badge {
+  id: number;
+  name: string;
+  description: string;
+  iconImageId: number;
+  displayName: string;
+  enabled: boolean;
+  awarder: {
+    id: number;
+    type: string;
+  };
+  statistics: {
+    pastDayAwardedCount: number;
+    awardedCount: number;
+    winRatePercentage: number;
+  };
+  created: string;
+  updated: string;
+  thumbnailUrl?: string;
 } 
