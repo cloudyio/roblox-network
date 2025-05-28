@@ -1,6 +1,32 @@
 import { NextResponse } from 'next/server';
 import { Badge } from '@/types/user';
 
+interface RobloxBadgeResponse {
+  id: number;
+  name: string;
+  description: string;
+  iconImageId: number;
+  displayName: string;
+  enabled: boolean;
+  awarder: {
+    id: number;
+    type: string;
+  };
+  statistics: {
+    pastDayAwardedCount: number;
+    awardedCount: number;
+    winRatePercentage: number;
+  };
+  created: string;
+  updated: string;
+}
+
+interface RobloxThumbnailResponse {
+  targetId: number;
+  state: string;
+  imageUrl: string;
+}
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -35,7 +61,7 @@ export async function GET(
     if (badgesResponse.ok) {
       const badgesData = await badgesResponse.json();
       if (badgesData.data) {
-        badges = badgesData.data.map((badge: any) => ({
+        badges = badgesData.data.map((badge: RobloxBadgeResponse) => ({
           id: badge.id,
           name: badge.name,
           description: badge.description,
@@ -62,7 +88,7 @@ export async function GET(
         if (thumbnailData.data) {
           // Map thumbnails to badges
           const thumbnailMap = new Map();
-          thumbnailData.data.forEach((thumb: any) => {
+          thumbnailData.data.forEach((thumb: RobloxThumbnailResponse) => {
             thumbnailMap.set(thumb.targetId, thumb.imageUrl);
           });
           
